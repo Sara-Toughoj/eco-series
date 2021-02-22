@@ -26,11 +26,3 @@ window.Echo = new Echo({
     cluster: 'eu',
     forceTLS: true
 });
-
-window.Echo.channel('orders')
-    .listen('OrderStatusUpdated', e => {
-        console.log('Order status with an id of ' +
-            e.order.id +
-            ' has been updated behind the scenes.');
-        console.log(e);
-    });

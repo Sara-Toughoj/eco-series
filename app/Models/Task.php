@@ -10,4 +10,12 @@ class Task extends Model
     use HasFactory;
 
     protected $fillable = ['body'];
+
+
+    //----------------------------- Relationships --------------------------
+
+    public function Project()
+    {
+        return $this->belongsTo(Project::class);
+    }
 }

@@ -1,5 +1,7 @@
 require('./bootstrap');
 
+require('alpinejs');
+
 import Vue from 'vue';
 
 window.Vue = require('vue');

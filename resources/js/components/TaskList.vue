@@ -1,10 +1,11 @@
 <template>
     <div>
+        <h1> {{ project.name }}</h1>
         <ul>
-            <li v-for="task in tasks" v-text="task"></li>
+            <li v-for="task in project.tasks" v-text="task.body"></li>
         </ul>
         <label>
-            <input type="text" v-model="newTask" @blur="addTask">
+            <input type="text" v-model="newTask" @blur="addTask" style="background-color: red">
         </label>
     </div>
 </template>
@@ -12,17 +13,18 @@
     export default {
         data() {
             return {
-                tasks: [],
+                project: this.projectdata,
                 newTask: ""
             };
         },
+        props: {
+            projectdata: {
+                required: true
+            }
+        },
         created() {
-            axios.get('tasks').then(response =>
-                (this.tasks = response.data)
-            )
-
-            window.Echo.channel('tasks').listen('TaskCreated', e => {
-                this.tasks.push(e.task.body);
+            window.Echo.channel('tasks.' + this.project.id).listen('TaskCreated', e => {
+                this.project.tasks.push(e.task);
             });
         },
         mounted() {
@@ -30,8 +32,8 @@
         },
         methods: {
             addTask() {
-                axios.post('tasks', {body: this.newTask}).then((response) => {
-                    this.tasks.push(this.newTask);
+                axios.post(`/api/projects/${this.project.id}/tasks`, {body: this.newTask}).then((response) => {
+                    this.project.tasks.push(response.data);
                     this.newTask = '';
                 });
             }
