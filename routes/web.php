@@ -25,6 +25,9 @@ class Order
 }
 
 Route::get('/', function () {
-    OrderStatusUpdated::dispatch(new Order(5));
     return view('welcome');
+});
+
+Route::get('/update', function () {
+    OrderStatusUpdated::dispatch(new Order(5));
 });
