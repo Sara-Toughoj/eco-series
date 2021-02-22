@@ -1,7 +1,8 @@
 <?php
 
+use App\Models\Task;
 use Illuminate\Support\Facades\Route;
-use App\Events\OrderStatusUpdated;
+use \App\Events\TaskCreated;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,20 +15,21 @@ use App\Events\OrderStatusUpdated;
 |
 */
 
-class Order
-{
-    public $id;
-
-    public function __construct($id)
-    {
-        $this->id = $id;
-    }
-}
-
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/update', function () {
-    OrderStatusUpdated::dispatch(new Order(5));
+Route::get('/tasks', function () {
+    return Task::latest()->pluck('body');
 });
+
+Route::post('/tasks', function () {
+    $task = Task::create([
+        'body' => request()->body,
+    ]);
+
+//    event((new TaskCreated($task))->dontBroadcastToCurrentUser());
+//    broadcast((new TaskCreated($task)))->toOthers();
+    event(new TaskCreated($task));
+});
+
