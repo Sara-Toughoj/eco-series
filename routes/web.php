@@ -14,7 +14,17 @@ use App\Events\OrderStatusUpdated;
 |
 */
 
+class Order
+{
+    public $id;
+
+    public function __construct($id)
+    {
+        $this->id = $id;
+    }
+}
+
 Route::get('/', function () {
-    OrderStatusUpdated::dispatch();
+    OrderStatusUpdated::dispatch(new Order(5));
     return view('welcome');
 });
