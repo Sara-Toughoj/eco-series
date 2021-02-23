@@ -1,11 +1,22 @@
 <template>
-    <div>
-        <h1> {{ project.name }}</h1>
-        <ul>
-            <li v-for="task in project.tasks" v-text="task.body"></li>
-        </ul>
-        <input type="text" v-model="newTask" @blur="addTask" style="background-color: red" @keydown="tagPeers">
-        <div v-if="activePeer" v-text="activePeer.name + 'is typing ....'"></div>
+    <div style="width:70%">
+        <div>
+            <h1> {{ project.name }}</h1>
+            <ul>
+                <li v-for="task in project.tasks" v-text="task.body"></li>
+            </ul>
+            <input type="text" v-model="newTask" @blur="addTask" style="background-color: red" @keydown="tagPeers">
+            <div v-if="activePeer" v-text="activePeer.name + 'is typing ....'"></div>
+        </div>
+
+        <div>
+            <h4>
+                Active Participants
+            </h4>
+            <ul>
+                <li v-for="participant in participants" v-text="participant.name"></li>
+            </ul>
+        </div>
     </div>
 </template>
 <script>
@@ -16,11 +27,12 @@
                 newTask: "",
                 activePeer: false,
                 typingTimer: false,
+                participants: [],
             };
         },
         computed: {
             channel() {
-                return window.Echo.private('tasks.' + this.project.id);
+                return window.Echo.join('tasks.' + this.project.id);
             }
         },
         props: {
@@ -30,6 +42,15 @@
         },
         created() {
             this.channel
+                .here(users => {
+                    this.participants = users
+                })
+                .joining(users => {
+                    this.participants.push(users);
+                })
+                .leaving(users => {
+                    this.participants.splice(this.participants.indexOf(users), 1);
+                })
                 .listen('TaskCreated', e => {
                     this.project.tasks.push(e.task);
                     this.activePeer = false;
