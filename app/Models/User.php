@@ -40,4 +40,11 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    // ----------------------------------- Relationships ---------------------------------
+
+    public function Projects()
+    {
+        return $this->belongsToMany(Project::class, 'project_participants');
+    }
 }
